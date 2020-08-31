@@ -65,6 +65,11 @@ const router = new Router({
           path: '/page2',
           name: 'page-2',
           component: () => import('./views/Page2.vue')
+        },
+        {
+          path: '/product',
+          name: 'Product',
+          component: () => import('./views/Product.vue')
         }
       ]
     },
