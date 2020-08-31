@@ -17,14 +17,17 @@
           <div class="vx-row no-gutter justify-center items-center">
 
             <div class="vx-col hidden lg:block lg:w-1/2">
-              <img src="@/assets/images/pages/login.png" alt="login" class="mx-auto">
+              <img src="/background.png" alt="login" style="width: 100%">
             </div>
 
             <div class="vx-col sm:w-full md:w-full lg:w-1/2 d-theme-dark-bg">
               <div class="p-8 login-tabs-container">
 
                 <div class="vx-card__title mb-4">
-                  <h4 class="mb-4">Login</h4>
+                  <a href="/" class="router-link-active">
+                    <img src="/logo-bin.png" class="logo cursor-pointer">
+                  </a>
+
                   <p>Welcome back, please login to your account.</p>
                 </div>
 

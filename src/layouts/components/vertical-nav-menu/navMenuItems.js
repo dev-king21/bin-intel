@@ -10,16 +10,10 @@
 
 export default [
   {
-    url: '/',
-    name: 'Home',
-    slug: 'home',
+    url: '/product',
+    name: 'Product',
+    slug: 'product',
     icon: 'HomeIcon'
-  },
-  {
-    url: '/dashboard',
-    name: 'DashBoard',
-    slug: 'dashboard',
-    icon: 'LayoutIcon'
   },
   {
     url: '/pricing',
@@ -29,15 +23,9 @@ export default [
   },
   {
     url: '/faq',
-    name: 'FAQ',
+    name: 'Documentation',
     slug: 'faq',
     icon: 'HelpCircleIcon'
-  },
-  {
-    url: '/profile',
-    name: 'Profile',
-    slug: 'profile',
-    icon: 'UserIcon'
   },
   {
     url: '/aboutus',
