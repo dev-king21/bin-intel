@@ -31,7 +31,7 @@
                   <p>Welcome back, please login to your account.</p>
                 </div>
 
-                <div>
+                <div class="mt-4">
                   <vs-input
                       name="email"
                       icon-no-border
@@ -55,8 +55,8 @@
                       <vs-checkbox v-model="checkbox_remember_me" class="mb-3">Remember Me</vs-checkbox>
                       <router-link to="">Forgot Password?</router-link>
                   </div>
-                  <vs-button type="border">Register</vs-button>
-                  <vs-button class="float-right" @click="login_click(email, password)">Login</vs-button>
+                  <vs-button type="border" @click="registerUser">Register</vs-button>
+                  <vs-button class="float-right" :disabled="!validateForm"  @click="login_click(email, password)">Login</vs-button>
 
                   <vs-divider>OR</vs-divider>
 
@@ -102,6 +102,11 @@ export default{
       checkbox_remember_me: false
     }
   },
+  computed: {
+    validateForm () {
+      return this.email !== '' && this.password !== ''
+    }
+  },
   methods: {
     login_click (email, password) {
       const action = '/beta/signin'
@@ -111,7 +116,6 @@ export default{
       })
       this.$http.post(action, {email, password})
         .then((response) => {
-          console.log('login', response)
           if (response.data.statusCode === 200) {
             this.$vs.loading.close()
             const auth = response.data.body.data.AuthenticationResult
@@ -120,14 +124,17 @@ export default{
             localStorage.setItem('RefreshToken', auth.RefreshToken)
             this.$router.push('/')
           } else {
+            this.$vs.loading.close()
             this.$vs.notify({
               title:'Error',
               text:response.data.body.message,
               color:'danger',
               position:'top-right'})
-            this.$vs.loading.close()
           }
         })
+    },
+    registerUser () {
+      this.$router.push('/pages/register').catch(() => {})
     }
   }
 }

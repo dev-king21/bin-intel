@@ -87,6 +87,7 @@ export default {
           }
         }).catch((error) => {
           this.$vs.loading.close()
+          console.log(error)
           this.loader = false
           this.msg = 'The incoming token has expired'
           localStorage.removeItem('IdToken')

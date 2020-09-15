@@ -89,6 +89,11 @@ const router = new Router({
           component: () => import('@/views/pages/Login.vue')
         },
         {
+          path: '/pages/register',
+          name: 'page-register',
+          component: () => import('@/views/pages/Register.vue')
+        },
+        {
           path: '/pages/error-404',
           name: 'page-error-404',
           component: () => import('@/views/pages/Error404.vue')
@@ -112,12 +117,12 @@ router.afterEach(() => {
 })
 
 router.beforeEach((to, from, next) => {
-  const Idtoken = localStorage.getItem('IdToken')
-  if (to.name === 'page-login') return next()
+  // const Idtoken = localStorage.getItem('IdToken')
+  // if (to.name === 'page-login') return next()
   // if (!Idtoken) {
   //   return next('/pages/login')
   // }
-  next()
+  return next()
 })
 
 export default router

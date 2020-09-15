@@ -19,8 +19,8 @@ Vue.use(Vuesax)
 
 
 // axios
-import axios from './axios.js'
-Vue.prototype.$http = axios
+import {instance} from './axios.js'
+Vue.prototype.$http = instance
 
 // Filters
 import './filters/filters.js'
