@@ -35,9 +35,9 @@
                   <vs-input
                     data-vv-validate-on="blur"
                     label-placeholder="Name"
-                    name="displayName"
+                    name="user_name"
                     placeholder="Name"
-                    v-model="displayName"
+                    v-model="user_name"
                     class="w-full" />
 
                   <vs-input
@@ -87,7 +87,7 @@
 export default{
   data () {
     return {
-      displayName: '',
+      user_name: '',
       email: '',
       password: '',
       confirm_password: '',
@@ -96,7 +96,11 @@ export default{
   },
   computed: {
     validateForm () {
-      return this.displayName !== '' && this.email !== '' && this.password !== '' && this.confirm_password === this.password && this.isTermsConditionAccepted === true
+      return this.user_name !== ''
+        && this.email !== ''
+        && this.password !== ''
+        && this.confirm_password === this.password
+        && this.isTermsConditionAccepted === true
     }
   },
   methods: {
@@ -109,10 +113,10 @@ export default{
       })
       const action = '/beta/signup'
       const params = {
-        name: this.displayName,
+        name: this.user_name,
         email: this.email,
         password: this.password,
-        phone_number: '+8800000000000'
+        phone_number: '+8801234567890'
       }
       this.$http.post(action, params)
         .then((response) => {
@@ -131,6 +135,14 @@ export default{
               color:'danger',
               position:'top-right'})
           }
+        }).catch((error) => {
+          console.log(error)
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title:'Error',
+            text:error,
+            color:'danger',
+            position:'top-right'})
         })
     }
   }

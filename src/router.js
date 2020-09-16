@@ -47,19 +47,9 @@ const router = new Router({
           component: () => import('./views/Faq.vue')
         },
         {
-          path: '/dashboard',
-          name: 'DashBoard',
-          component: () => import('./views/DashBoard.vue')
-        },
-        {
           path: '/aboutus',
           name: 'AboutUs',
           component: () => import('./views/AboutUs.vue')
-        },
-        {
-          path: '/profile',
-          name: 'Profile',
-          component: () => import('./views/Profile.vue')
         },
         {
           path: '/page2',
@@ -70,6 +60,33 @@ const router = new Router({
           path: '/product',
           name: 'Product',
           component: () => import('./views/Product.vue')
+        }
+      ]
+    },
+    {
+    // =============================================================================
+    // MAIN LAYOUT ROUTES WHEN USERS LOGS IN
+    // =============================================================================
+      path: '',
+      component: () => import('./layouts/main/UserPage.vue'),
+      children: [
+        // =============================================================================
+        // Theme Routes
+        // =============================================================================
+        {
+          path: '/dashboard',
+          name: 'DashBoard',
+          component: () => import('./views/DashBoard.vue')
+        },
+        {
+          path: '/billing',
+          name: 'Billing',
+          component: () => import('./views/Billing.vue')
+        },
+        {
+          path: '/profile',
+          name: 'Profile',
+          component: () => import('./views/Profile.vue')
         }
       ]
     },

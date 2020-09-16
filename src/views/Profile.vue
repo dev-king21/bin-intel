@@ -1,7 +1,17 @@
 <template>
 	<div>
     <div class="vx-row">
-        <div class="vx-col w-full">
+        <div class="vx-col w-full sm:w-1/2 lg:w-1/4 mb-base">
+            <vx-card>
+              <div slot="no-body">
+                  <img ref="avatarPreview" alt="User Avatar" class="responsive card-img-top">
+              </div>
+              <div class="flex justify-between flex-wrap">
+                <vs-button radius color="primary" type="gradient" icon-pack="feather" icon="icon-upload" class="ml-auto" @click="browseAvatarImg"></vs-button>
+              </div>
+            </vx-card>
+        </div>
+        <div class="vx-col w-full sm:w-1/2 lg:w-3/4">
             <vx-card>
                 <h1>General</h1>
                 <vs-divider class="my-6"></vs-divider>
@@ -110,12 +120,14 @@
             </vx-card>
         </div>
     </div>
+    <input class="hidden" type="file" ref="refAvatarFile" accept=".png, .gif, .jpg, .jpeg" @change="avatarChanged">  
 	</div>
 </template>
 <script>
 export default {
   data () {
     return {
+      user_img: 'https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/demo-1/img/content-img-1.228da091.jpg',
       first_name: '',
       last_name: '',
       organization: '',
@@ -134,6 +146,49 @@ export default {
       api_credit: false,
       out_api_credit: false
     }
+  },
+  methods: {
+      browseAvatarImg () {
+      this.$refs.refAvatarFile.click()
+    },
+     readerData (rawFile) {
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = e => {
+          this.$refs.avatarPreview.src = e.target.result
+          this.avatar_file = rawFile
+          //this.onSuccess(sendData)
+          resolve()
+        }
+        this.avatar_show = true
+        reader.readAsDataURL(rawFile)
+      })
+    },
+    avatarChanged (e) {
+      const files = e.target.files
+      this.validateAndUpload(files)  
+    },
+    validateAndUpload (files) {
+      const rawFile = files[0] // only use files[0]
+      if (!this.isImage(rawFile)) {
+        this.$vs.notify({
+          title: "Format invalid",
+          text: "The file format is not valid",
+          iconPack: 'feather',
+          icon: 'icon-alert-circle',
+          color: 'danger'
+        })
+        return false
+      }
+      this.previewAvatar(rawFile)
+    },
+    isImage (file) {
+      return /\.(jpeg|png|gif|jpg)$/.test(file.name)
+    },
+    previewAvatar (file) {
+      this.$refs.refAvatarFile.value = null // fix can't select the same excel
+      this.readerData(file)
+    }  
   }
 }
 </script>

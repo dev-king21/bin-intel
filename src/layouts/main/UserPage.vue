@@ -10,49 +10,48 @@
 
 <template>
   <div class="layout--main" :class="[layoutTypeClass, navbarClasses, footerClasses, {'no-scroll': isAppPage}]">
-    <img v-if="$route.path === '/'" class="fixed responsive" src="/background.png" style="opacity: 0.6"/>
-    <header class="vs-navbar flex flex-end vs-navbar-null vs-navbar-color-transparent" style="background: transparent; z-index:99999;">
-      <div class="vs-navbar--header">
-        <button class="vs-navbar--btn-responsive">
-          <span class="btn-responsive-line line--1"></span>
-          <span class="btn-responsive-line line--2"></span>
-          <span class="btn-responsive-line line--3"></span>
-        </button>
-        <div>
-          <h3 class="vs-navbar--title flex items-center">
-            <a href="/" class="router-link-active">
-              <img src="/logo-bin.png" class="logo cursor-pointer">
-            </a>
-          </h3>
-        </div>
-      </div>
-      <div class="vs-con-items">
-        <li class="vs-navbar--item ml-4 is-active-item vs-navbar-item-primary"
-          v-for="item in navMenuItems" :key="item.url">
-          <a :href="item.url" class="flex items-center font-bold mr-4" style="font-size: 14px;" :class="{'text-primary': item.url === $route.path}">
-            {{item.name}} </a>
-        </li>
-        <li class="vs-navbar--item vs-navbar-item-primary">
-          <template v-if="isLogin">
-            <a class="h2 flex items-center cursor-pointer font-bold mr-4" style="font-size: 14px;" @click="logout">
-              <feather-icon class="mr-4" icon="LogOutIcon"/> LogOut </a>
-          </template>
-          <template v-else>
-            <a class="h2 flex items-center cursor-pointer font-bold mr-4" style="font-size: 14px;" @click="$router.push('/pages/login').catch(() => {})">
-              Sign In </a>
-          </template>
-        </li>
-      </div>
-    </header>
 
-    <div id="" :class="[contentAreaClass, {'show-overlay': bodyOverlay}]">
+    <v-nav-menu
+      :navMenuItems = "navMenuItems"
+      title         = "BinIntel"
+      parent        = ".layout--main" />
+
+    <div id="content-area" :class="[contentAreaClass, {'show-overlay': bodyOverlay}]">
       <div id="content-overlay" />
 
+    <!-- Navbar -->
+    <template v-if="mainLayoutType === 'horizontal' && windowWidth >= 1200">
+      <the-navbar-horizontal
+        :navbarType= "navbarType"
+        :class="[
+          {'text-white' : isNavbarDark  && !isThemeDark},
+          {'text-base'  : !isNavbarDark && isThemeDark}
+        ]" />
+
+      <div style="height: 62px" v-if="navbarType === 'static'"></div>
+
+      <h-nav-menu
+        :class="[
+          {'text-white' : isNavbarDark  && !isThemeDark},
+          {'text-base'  : !isNavbarDark && isThemeDark}
+        ]"
+        :navMenuItems="navMenuItems" />
+    </template>
+
+    <template v-else>
+      <the-navbar-vertical
+        :navbarColor="navbarColor"
+        :class="[
+          {'text-white' : isNavbarDark  && !isThemeDark},
+          {'text-base'  : !isNavbarDark && isThemeDark}
+        ]" />
+    </template>
+    <!-- /Navbar -->
 
       <div class="content-wrapper">
 
         <div class="router-view">
-          <div class="content">
+          <div class="router-content">
 
             <transition :name="routerTransition">
 
@@ -118,11 +117,12 @@
 <script>
 import BackToTop           from 'vue-backtotop'
 import HNavMenu            from '@/layouts/components/horizontal-nav-menu/HorizontalNavMenu.vue'
-import navMenuItems        from '@/layouts/components/vertical-nav-menu/navMenuItems.js'
+import navMenuItems        from '@/layouts/components/vertical-nav-menu/usrNavMenuItems.js'
 import TheNavbarHorizontal from '@/layouts/components/navbar/TheNavbarHorizontal.vue'
 import TheNavbarVertical   from '@/layouts/components/navbar/TheNavbarVertical.vue'
 import TheFooter           from '@/layouts/components/TheFooter.vue'
 import themeConfig         from '@/../themeConfig.js'
+import VNavMenu            from '@/layouts/components/vertical-nav-menu/VerticalNavMenu.vue'
 
 export default {
   components: {
@@ -130,7 +130,8 @@ export default {
     HNavMenu,
     TheFooter,
     TheNavbarHorizontal,
-    TheNavbarVertical
+    TheNavbarVertical,
+    VNavMenu
   },
   data () {
     return {
@@ -141,8 +142,7 @@ export default {
       navbarType        : themeConfig.navbarType  || 'floating',
       navMenuItems,
       routerTransition  : themeConfig.routerTransition || 'none',
-      routeTitle        : this.$route.meta.pageTitle,
-      isLogin : localStorage.getItem('IdToken')
+      routeTitle        : this.$route.meta.pageTitle
     }
   },
   watch: {
@@ -206,21 +206,14 @@ export default {
       } else {
         this.$store.commit('TOGGLE_IS_VERTICAL_NAV_MENU_ACTIVE', true)
       }
-    },
-    logout () {
-
-      // If JWT login
-      if (localStorage.getItem('IdToken')) {
-        localStorage.removeItem('IdToken')
-        localStorage.removeItem('AccessToken')
-        localStorage.removeItem('RefreshToken')
-        this.$router.push('/pages/login').catch(() => {})
-      }
-
-      // This is just for demo Purpose. If user clicks on logout -> redirect
-      this.$router.push('/pages/login').catch(() => {})
     }
+  },
+  created () {
+    const color = this.navbarColor === '#fff' && this.isThemeDark ? '#10163a' : this.navbarColor
+    this.updateNavbarColor(color)
+    this.setNavMenuVisibility(this.$store.state.mainLayoutType)
   }
 }
 
 </script>
+

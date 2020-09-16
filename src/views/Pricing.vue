@@ -148,6 +148,7 @@
 <script>
 const stripe = Stripe('pk_test_OQyIWNfHPcauzJrpOaSXq3D1'), elements = stripe.elements()
 let card = undefined
+let http = undefined
 
 const orderComplete = function (clientSecret) {
   console.log('order complete', clientSecret)
@@ -163,21 +164,9 @@ const handleAction = function (clientSecret) {
     if (data.error) {
       console.log('Your card was not authenticated, please try again')
     } else if (data.paymentIntent.status === 'requires_confirmation') {
-      fetch('/https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('IdToken')
-        },
-        body: JSON.stringify({
-          paymentIntentId: data.paymentIntent.id
-        })
-      })
-        .then(function (result) {
-          return result.json()
-        })
-        .then(function (json) {
-          console.log(json)
+      http.post('https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {paymentIntentId: data.paymentIntent.id})
+        .then(function (response) {
+          const json = response.data
           if (json.error) {
             console.log(json.error)
           } else {
@@ -189,30 +178,42 @@ const handleAction = function (clientSecret) {
   })
 }
 
-const pay = function (paymentMethodId) {
+const pay = function (level) {
   stripe.createPaymentMethod('card', card)
     .then(function (result) {
       if (result.error) {
         console.log(result.error.message)
       } else {
         const orderData = {
-          items: [{ id: 'photo-subscription' }],
-          currency: 'usd'
+          items: level,
+          currency: 'usd',
+          paymentMethodId: result.paymentMethod.id
         }
-        console.log(paymentMethodId)
-        orderData.paymentMethodId = result.paymentMethod.id
-            
-        return fetch('https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {
+        console.log(http)
+        http.post('https://cors-anywhere.herokuapp.com/https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', orderData)
+          .then(response => {
+            console.log(response.data)
+            if (response.data.error) {
+              console.log(response.error)
+            } else if (response.data.requiresAction) {
+              handleAction(response.data.clientSecret)
+            } else {
+              orderComplete(response.data.clientSecret)
+            }
+          })
+        /* return fetch('https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('IdToken')
           },
-          body: JSON.stringify(orderData)
-        })
+          body: JSON.stringify(orderData),
+          redirect: 'follow'
+        }) */
+          
       }
     })
-    .then(function (result) {
+    /*  .then(function (result) {
       console.log(result)
       return result.json()
     })
@@ -225,7 +226,8 @@ const pay = function (paymentMethodId) {
       } else {
         orderComplete(response.clientSecret)
       }
-    })
+    }) */
+    
 }
 
 const style = {
@@ -253,15 +255,13 @@ export default {
     }
   },
   mounted () {
+    http = this.$http
     card = elements.create('card', {style})
     card.mount('#card')
   },
   methods: {
     purchase () {
-      /* stripe.createToken(card).then(function (result) {
-        console.log(result)
-        // Access the token with result.token
-      }) */
+      // handleAction('pi_1HRxreB3HlgWrwAiuY7A0OuL_secret_Z2mJIk8EDV9JmEjU231wCqtxx')
       pay(1)
     },
     modalOpen (item) {

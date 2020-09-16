@@ -98,6 +98,12 @@
               <!-- /Nav-Group -->
             </template>
           </template>
+          <div class="vs-sidebar--item">
+              <a href="#" @click="logout">
+                <feather-icon class="mr-4" icon="LogOutIcon"/>
+                <span class="truncate">LogOut</span>
+              </a>
+          </div>
         </component>
         <!-- /Menu Items -->
       </div>
@@ -332,6 +338,19 @@ export default {
     toggleReduce (val) {
       this.reduceButton = val
       this.setVerticalNavMenuWidth()
+    },
+    logout () {
+
+      // If JWT login
+      if (localStorage.getItem('IdToken')) {
+        localStorage.removeItem('IdToken')
+        localStorage.removeItem('AccessToken')
+        localStorage.removeItem('RefreshToken')
+        this.$router.push('/pages/login').catch(() => {})
+      }
+
+      // This is just for demo Purpose. If user clicks on logout -> redirect
+      this.$router.push('/pages/login').catch(() => {})
     }
   },
   mounted () {
