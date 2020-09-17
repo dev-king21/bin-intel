@@ -126,8 +126,8 @@ export default{
               .then((res_user) => {
                 localStorage.setItem('userInfo', JSON.stringify(res_user.data.body))
                 this.$store.state.AppActiveUser = res_user.data.body
-                this.$router.push('/')
               })
+            this.$router.push('/')
           } else {
             this.$vs.loading.close()
             this.$vs.notify({
