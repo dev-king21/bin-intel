@@ -62,7 +62,7 @@ export default {
     submit_click () {
       this.$vs.loading({
         type: 'sound',
-        text: 'Search ... '
+        text: 'Loading ... '
       })
       this.$http.get(`/beta/home/${this.value1}`)
         .then((response) => {

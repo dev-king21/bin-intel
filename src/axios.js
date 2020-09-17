@@ -12,6 +12,7 @@ instance.interceptors.request.use(function (config) {
   const token = localStorage.getItem('IdToken')
   if (token) {
     config.headers.Authorization = token
+    config.headers['Content-Type'] = 'application/json'
   }
   return config
 })

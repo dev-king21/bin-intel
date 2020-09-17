@@ -112,7 +112,7 @@ export default{
       const action = '/beta/signin'
       this.$vs.loading({
         type: 'sound',
-        text: 'loging in ... '
+        text: 'Loading ... '
       })
       this.$http.post(action, {email, password})
         .then((response) => {
@@ -122,7 +122,12 @@ export default{
             localStorage.setItem('AccessToken', auth.AccessToken)
             localStorage.setItem('IdToken', auth.IdToken)
             localStorage.setItem('RefreshToken', auth.RefreshToken)
-            this.$router.push('/')
+            this.$http.get('/beta/profile')
+              .then((res_user) => {
+                localStorage.setItem('userInfo', JSON.stringify(res_user.data.body))
+                this.$store.state.AppActiveUser = res_user.data.body
+                this.$router.push('/')
+              })
           } else {
             this.$vs.loading.close()
             this.$vs.notify({

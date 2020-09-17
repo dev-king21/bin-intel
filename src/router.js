@@ -76,17 +76,26 @@ const router = new Router({
         {
           path: '/dashboard',
           name: 'DashBoard',
-          component: () => import('./views/DashBoard.vue')
+          component: () => import('./views/DashBoard.vue'),
+          meta: {
+            rule: 'user'
+          }
         },
         {
           path: '/billing',
           name: 'Billing',
-          component: () => import('./views/Billing.vue')
+          component: () => import('./views/Billing.vue'),
+          meta: {
+            rule: 'user'
+          }
         },
         {
           path: '/profile',
           name: 'Profile',
-          component: () => import('./views/Profile.vue')
+          component: () => import('./views/Profile.vue'),
+          meta: {
+            rule: 'user'
+          }
         }
       ]
     },
@@ -103,17 +112,26 @@ const router = new Router({
         {
           path: '/pages/login',
           name: 'page-login',
-          component: () => import('@/views/pages/Login.vue')
+          component: () => import('@/views/pages/Login.vue'),
+          meta: {
+            rule: 'req'
+          }
         },
         {
           path: '/pages/register',
           name: 'page-register',
-          component: () => import('@/views/pages/Register.vue')
+          component: () => import('@/views/pages/Register.vue'),
+          meta: {
+            rule: 'req'
+          }
         },
         {
           path: '/pages/error-404',
           name: 'page-error-404',
-          component: () => import('@/views/pages/Error404.vue')
+          component: () => import('@/views/pages/Error404.vue'),
+          meta: {
+            rule: 'req'
+          }
         }
       ]
     },
@@ -134,11 +152,16 @@ router.afterEach(() => {
 })
 
 router.beforeEach((to, from, next) => {
-  // const Idtoken = localStorage.getItem('IdToken')
-  // if (to.name === 'page-login') return next()
-  // if (!Idtoken) {
-  //   return next('/pages/login')
-  // }
+  const Idtoken = localStorage.getItem('IdToken')
+  if (to.meta && to.meta.rule === 'req') return next()
+  if (!Idtoken && to.meta && to.meta.rule === 'user' ) {
+    return next('/')
+  }
+
+  if (Idtoken && (!to.meta || to.meta.rule !== 'user')) {
+    return next('/dashboard')
+  }
+  
   return next()
 })
 
