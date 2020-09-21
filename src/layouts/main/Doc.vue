@@ -14,45 +14,15 @@
     <v-nav-menu
       :navMenuItems = "navMenuItems"
       title         = "BinIntel"
-      is_logout     = "true"
       parent        = ".layout--main" />
 
     <div id="content-area" :class="[contentAreaClass, {'show-overlay': bodyOverlay}]">
       <div id="content-overlay" />
 
-    <!-- Navbar -->
-    <template v-if="mainLayoutType === 'horizontal' && windowWidth >= 1200">
-      <the-navbar-horizontal
-        :navbarType= "navbarType"
-        :class="[
-          {'text-white' : isNavbarDark  && !isThemeDark},
-          {'text-base'  : !isNavbarDark && isThemeDark}
-        ]" />
-
-      <div style="height: 62px" v-if="navbarType === 'static'"></div>
-
-      <h-nav-menu
-        :class="[
-          {'text-white' : isNavbarDark  && !isThemeDark},
-          {'text-base'  : !isNavbarDark && isThemeDark}
-        ]"
-        :navMenuItems="navMenuItems" />
-    </template>
-
-    <template v-else>
-      <the-navbar-vertical
-        :navbarColor="navbarColor"
-        :class="[
-          {'text-white' : isNavbarDark  && !isThemeDark},
-          {'text-base'  : !isNavbarDark && isThemeDark}
-        ]" />
-    </template>
-    <!-- /Navbar -->
-
       <div class="content-wrapper">
 
         <div class="router-view">
-          <div class="router-content">
+          <div class="content">
 
             <transition :name="routerTransition">
 
@@ -118,7 +88,7 @@
 <script>
 import BackToTop           from 'vue-backtotop'
 import HNavMenu            from '@/layouts/components/horizontal-nav-menu/HorizontalNavMenu.vue'
-import navMenuItems        from '@/layouts/components/vertical-nav-menu/usrNavMenuItems.js'
+import navMenuItems        from '@/layouts/components/vertical-nav-menu/docNavMenuItems.js'
 import TheNavbarHorizontal from '@/layouts/components/navbar/TheNavbarHorizontal.vue'
 import TheNavbarVertical   from '@/layouts/components/navbar/TheNavbarVertical.vue'
 import TheFooter           from '@/layouts/components/TheFooter.vue'

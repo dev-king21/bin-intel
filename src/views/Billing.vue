@@ -10,7 +10,7 @@
 <template>
   <div class="vx-row">
     <div class="vx-col w-full md:w-1/4 lg:w-1/4 xl:w-1/4">
-        <vx-card class="popup" :class="isSelected ? 'highlight' : ''">
+        <vx-card class="popup" :class="currentLevel === 0 ? 'highlight' : ''">
             <template slot="no-body">
                 <div>
                     <div class="price-header bg-primary">
@@ -30,14 +30,24 @@
                         <span class="text-muted ml-4">Renews On: 1 Sep 2020</span>
                     </p>
                     <div class="mb-8 flex items-center justify-center">
-                      <vs-button icon-pack="feather" icon="icon-chevrons-right" icon-after class="text-center" disabled>Buy Now</vs-button>
+                     <vs-button
+                        :icon-pack="currentLevel !== 0 ? 'feather' : ''"
+                        :icon="currentLevel !== 0 ? 'icon-chevrons-right' : ''"
+                        icon-after
+                        class="text-center"
+                        :color="currentLevel === 0 ? 'success' : 'primary'"
+                        @click="currentLevel !== 0 ? modalOpen(0): null"
+                        :disabled="currentLevel > 0"
+                        >
+                        {{currentLevel === 0 ? 'Current Plan' : 'Buy Now'}}
+                      </vs-button>
                     </div>
                 </div>
             </template>
         </vx-card>
     </div>
     <div class="vx-col w-full md:w-1/4 lg:w-1/4 xl:w-1/4">
-        <vx-card class="popup">
+        <vx-card class="popup" :class="currentLevel === 1 ? 'highlight' : ''">
             <template slot="no-body">
                 <div>
                     <div class="price-header bg-primary">
@@ -55,13 +65,15 @@
                     </p>
                      <div class="mb-8 flex items-center justify-center">
                       <vs-button
-                        icon-pack="feather"
-                        icon="icon-chevrons-right"
+                        :icon-pack="currentLevel !== 1 ? 'feather' : ''"
+                        :icon="currentLevel !== 1 ? 'icon-chevrons-right' : ''"
                         icon-after
                         class="text-center"
-                        @click="modalOpen(1)"
+                        :color="currentLevel === 1 ? 'success' : 'primary'"
+                        @click="currentLevel !== 1 ? modalOpen(1): null"
+                        :disabled="currentLevel > 1"
                         >
-                        Buy Now
+                        {{currentLevel === 1 ? 'Current Plan' : 'Buy Now'}}
                       </vs-button>
                      </div>
                 </div>
@@ -69,7 +81,7 @@
         </vx-card>
     </div>
     <div class="vx-col w-full md:w-1/4 lg:w-1/4 xl:w-1/4">
-        <vx-card class="popup">
+        <vx-card class="popup" :class="currentLevel === 2 ? 'highlight' : ''">
             <template slot="no-body">
                 <div>
                     <div class="price-header bg-primary">
@@ -87,13 +99,15 @@
                     </p>
                      <div class="mb-8 flex items-center justify-center">
                       <vs-button
-                        icon-pack="feather"
-                        icon="icon-chevrons-right"
+                        :icon-pack="currentLevel !== 2 ? 'feather' : ''"
+                        :icon="currentLevel !== 2 ? 'icon-chevrons-right' : ''"
                         icon-after
                         class="text-center"
-                        @click="modalOpen(2)"
+                        :color="currentLevel === 2 ? 'success' : 'primary'"
+                        @click="currentLevel !== 2 ? modalOpen(2): null"
+                        :disabled="currentLevel > 2"
                         >
-                        Buy Now
+                        {{currentLevel === 2 ? 'Current Plan' : 'Buy Now'}}
                       </vs-button>
                      </div>
                 </div>
@@ -101,7 +115,7 @@
         </vx-card>
     </div>
     <div class="vx-col w-full md:w-1/4 lg:w-1/4 xl:w-1/4">
-        <vx-card class="popup">
+        <vx-card class="popup" :class="currentLevel === 3 ? 'highlight' : ''">
             <template slot="no-body">
                 <div>
                     <div class="price-header bg-primary">
@@ -118,14 +132,16 @@
                         <span class="text-center ml-4">$4 per extra 1 000 Requests</span>
                     </p>
                      <div class="mb-8 flex items-center justify-center">
-                      <vs-button
-                        icon-pack="feather"
-                        icon="icon-chevrons-right"
+                     <vs-button
+                        :icon-pack="currentLevel !== 3 ? 'feather' : ''"
+                        :icon="currentLevel !== 3 ? 'icon-chevrons-right' : ''"
                         icon-after
                         class="text-center"
-                        @click="modalOpen(3)"
+                        :color="currentLevel === 3 ? 'success' : 'primary'"
+                        @click="currentLevel !== 3 ? modalOpen(3): null"
+                        :disabled="currentLevel > 3"
                         >
-                        Buy Now
+                        {{currentLevel === 3 ? 'Current Plan' : 'Buy Now'}}
                       </vs-button>
                      </div>
                 </div>
@@ -138,7 +154,7 @@
         <div id="card"></div>
       </div>
       <div class="mt-8 flex flex-wrap items-center justify-end">
-        <vs-button @click="purchase">Purchase</vs-button>
+        <vs-button @click="purchase(updateLevel)">Purchase</vs-button>
         <vs-button class="ml-4" color="rgba(0, 0, 0, 0.5)" @click="modalPayment=false">Cancel</vs-button>
       </div>
     </vs-popup>
@@ -148,9 +164,11 @@
 <script>
 const stripe = Stripe('pk_test_OQyIWNfHPcauzJrpOaSXq3D1'), elements = stripe.elements()
 let card = undefined
+let http = undefined
+let notify = undefined
+let router = undefined
 
 const orderComplete = function (clientSecret) {
-  console.log('order complete', clientSecret)
   stripe.retrievePaymentIntent(clientSecret).then(function (result) {
     const paymentIntent = result.paymentIntent
     const paymentIntentJson = JSON.stringify(paymentIntent, null, 2)
@@ -163,21 +181,9 @@ const handleAction = function (clientSecret) {
     if (data.error) {
       console.log('Your card was not authenticated, please try again')
     } else if (data.paymentIntent.status === 'requires_confirmation') {
-      fetch('/https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('IdToken')
-        },
-        body: JSON.stringify({
-          paymentIntentId: data.paymentIntent.id
-        })
-      })
-        .then(function (result) {
-          return result.json()
-        })
-        .then(function (json) {
-          console.log(json)
+      http.post('https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {paymentIntentId: data.paymentIntent.id})
+        .then(function (response) {
+          const json = response.data
           if (json.error) {
             console.log(json.error)
           } else {
@@ -189,30 +195,76 @@ const handleAction = function (clientSecret) {
   })
 }
 
-const pay = function (paymentMethodId) {
+const pay = function (level) {
   stripe.createPaymentMethod('card', card)
     .then(function (result) {
       if (result.error) {
-        console.log(result.error.message)
+        notify.notify({
+          title:'Error',
+          text: result.error.message,
+          color:'danger',
+          position:'top-right'})
       } else {
         const orderData = {
-          items: [{ id: 'photo-subscription' }],
-          currency: 'usd'
+          items: level,
+          currency: 'usd',
+          paymentMethodId: result.paymentMethod.id
         }
-        console.log(paymentMethodId)
-        orderData.paymentMethodId = result.paymentMethod.id
+        notify.loading({
+          type: 'sound',
+          text: 'Loading ... '
+        })
+        http.post('https://cors-anywhere.herokuapp.com/https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', orderData)
+          .then((response) => {
+            console.log('res', response.data)
+            notify.loading.close()
+            if (response.data.body && response.data.body.error) {
+              notify.notify({
+                title:'Error',
+                text: response.data.body.error,
+                color:'danger',
+                position:'top-right'})
+            } else if (response.data.errorMessage) {
+              notify.notify({
+                title:'Error',
+                text: response.data.errorMessage,
+                color:'danger',
+                position:'top-right'})
+            } else if (response.data.body.requiresAction) {
+              handleAction(response.data.body.clientSecret)
+            } else if (response.data.body.clientSecret) {
+              orderComplete(response.data.body.clientSecret)
+              notify.notify({
+                title:'Success',
+                text:'💰 Payment successed!',
+                color:'success',
+                position:'top-right'})
+              setTimeout(() => router.go(), 2000)
+            }
+          }).catch((error) => {
+            console.log(error.response.data.message)
+            notify.loading.close()
+            notify.notify({
+              title:'Error',
+              text: error.response.data.message,
+              color:'danger',
+              position:'top-right'})
 
-        return fetch('https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {
+          })
+        /* return fetch('https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/stripe-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('IdToken')
           },
-          body: JSON.stringify(orderData)
-        })
+          body: JSON.stringify(orderData),
+          redirect: 'follow'
+        }) */
+
       }
     })
-    .then(function (result) {
+    /*  .then(function (result) {
+      console.log(result)
       return result.json()
     })
     .then(function (response) {
@@ -224,7 +276,8 @@ const pay = function (paymentMethodId) {
       } else {
         orderComplete(response.clientSecret)
       }
-    })
+    }) */
+
 }
 
 const style = {
@@ -249,21 +302,21 @@ export default {
       amount: 100,
       modalTitle: '',
       price: '',
-      isSelected: true
+      currentLevel: this.$store.state.AppActiveUser.userLevel ? this.$store.state.AppActiveUser.userLevel : 0,
+      buttonText: [],
+      updateLevel: 0
     }
   },
   mounted () {
+    http = this.$http
     card = elements.create('card', {style})
     card.mount('#card')
   },
   methods: {
-   
-    purchase () {
-      /* stripe.createToken(card).then(function (result) {
-        console.log(result)
-        // Access the token with result.token
-      }) */
-      pay(1)
+    purchase (item) {
+      // handleAction('pi_1HRxreB3HlgWrwAiuY7A0OuL_secret_Z2mJIk8EDV9JmEjU231wCqtxx')
+      pay(item)
+      this.modalPayment = false
     },
     modalOpen (item) {
       switch (item) {
@@ -272,28 +325,80 @@ export default {
         this.amount = 2500
         this.modalTitle = 'Purchase Pro Monthly'
         this.price = '25.00'
+        this.updateLevel = item
         break
       case 2:
         this.modalPayment = true
         this.amount = 12500
         this.modalTitle = 'Purchase Team Monthly'
         this.price = '125.00'
+        this.updateLevel = item
         break
       case 3:
         this.modalPayment = true
         this.amount = 125000
         this.price = '1250.00'
         this.modalTitle = 'Purchase Team Annually'
+        this.updateLevel = item
+        break
+      default:
+        this.updateLevel = 0
         break
       }
     }
+  },
+  created () {
+    notify = this.$vs
+    router = this.$router
+    this.$vs.loading({
+      type: 'sound',
+      text: 'Loading ... '
+    })
+    this.$http.get('/beta/profile')
+      .then((res_user) => {
+        this.$vs.loading.close()
+        localStorage.setItem('userInfo', JSON.stringify(res_user.data.body))
+        this.$store.state.AppActiveUser = res_user.data.body
+        this.currentLevel = this.$store.state.AppActiveUser.userLevel ? Number(this.$store.state.AppActiveUser.userLevel) : 0
+        if (this.currentLevel === 0) {
+          this.buttonText[0] = 'Current Plan'
+          this.buttonText[1] = 'Upgrade'
+          this.buttonText[2] = 'Upgrade'
+          this.buttonText[3] = 'Upgrade'
+        }
+        if (this.currentLevel === 1) {
+          this.buttonText[0] = 'Downgrade'
+          this.buttonText[1] = 'Current Plan'
+          this.buttonText[2] = 'Upgrade'
+          this.buttonText[3] = 'Upgrade'
+        }
+        if (this.currentLevel === 2) {
+          this.buttonText[0] = 'Downgrade'
+          this.buttonText[1] = 'Downgrade'
+          this.buttonText[2] = 'Current Plan'
+          this.buttonText[3] = 'Upgrade'
+        }
+        if (this.currentLevel === 3) {
+          this.buttonText[0] = 'Downgrade'
+          this.buttonText[1] = 'Downgrade'
+          this.buttonText[2] = 'Downgrade'
+          this.buttonText[3] = 'Current Plan'
+        }
+      }).catch((error) => {
+        this.$vs.loading.close()
+        this.$vs.notify({
+          title:'Error',
+          text: error.response.data.message,
+          color:'danger',
+          position:'top-right'})
+      })
   }
 }
 </script>
 
 <style lang="scss">
   .popup {
-    
+
     position: relative;
     padding: 0;
     overflow: hidden;

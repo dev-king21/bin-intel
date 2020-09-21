@@ -99,6 +99,162 @@ const router = new Router({
         }
       ]
     },
+    {
+      // =============================================================================
+      // MAIN LAYOUT ROUTES WITH DOCUMENTATIONS
+      // =============================================================================
+      path: 'doc',
+      component: () => import('./layouts/main/Doc.vue'),
+      children: [
+        // =============================================================================
+        // Theme Routes
+        // =============================================================================
+        {
+          path: '/doc',
+          name: 'DocHome',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/bin-intel-api',
+          name: 'doc-bin-intel-api',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/java-sdk',
+          name: 'doc-java-sdk',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/csharp-sdk',
+          name: 'doc-csharp-sdk',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/php-sdk',
+          name: 'doc-php-sdk',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/javascript-sdk',
+          name: 'doc-javascript-sdk',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/jquery-sdk',
+          name: 'doc-jquery-sdk',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/collections/model',
+          name: 'doc-col-model',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/collections/list',
+          name: 'doc-col-list',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/collections/get',
+          name: 'doc-col-get',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/fields',
+          name: 'doc-fields',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/items',
+          name: 'doc-items',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/images',
+          name: 'doc-images',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/webhooks',
+          name: 'doc-webhooks',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/errors',
+          name: 'doc-errors',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/rate-limits',
+          name: 'doc-rate-limits',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/api-versions',
+          name: 'doc-api-versions',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
+          path: '/doc/changelog',
+          name: 'doc-changelog',
+          component: () => import('./views/doc/Home.vue'),
+          meta: {
+            rule: 'req'
+          }
+        }
+      ]
+    },
     // =============================================================================
     // FULL PAGE LAYOUTS
     // =============================================================================
@@ -154,14 +310,14 @@ router.afterEach(() => {
 router.beforeEach((to, from, next) => {
   const Idtoken = localStorage.getItem('IdToken')
   if (to.meta && to.meta.rule === 'req') return next()
-  if (!Idtoken && to.meta && to.meta.rule === 'user' ) {
+  if (!Idtoken && to.meta && to.meta.rule === 'user') {
     return next('/')
   }
 
   if (Idtoken && (!to.meta || to.meta.rule !== 'user')) {
     return next('/dashboard')
   }
-  
+
   return next()
 })
 

@@ -22,6 +22,14 @@ export default [
     icon: 'CreditCardIcon'
   },
   {
+    url: '/doc',
+    name: 'Documentation',
+    icon: 'BookOpenIcon',
+    slug: 'external',
+    i18n: 'Documentation',
+    target: '_blank'
+  },
+  {
     url: '/profile',
     name: 'Profile',
     slug: 'Profile',

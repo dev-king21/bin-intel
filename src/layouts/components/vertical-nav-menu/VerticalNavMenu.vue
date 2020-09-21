@@ -98,7 +98,7 @@
               <!-- /Nav-Group -->
             </template>
           </template>
-          <div class="vs-sidebar--item">
+          <div class="vs-sidebar--item" v-if="is_logout=='true'">
               <a href="#" @click="logout">
                 <feather-icon class="mr-4" icon="LogOutIcon"/>
                 <span class="truncate">LogOut</span>
@@ -140,7 +140,8 @@ export default {
     parent:           { type: String },
     reduceNotRebound: { type: Boolean, default: true },
     navMenuItems:     { type: Array,   required: true },
-    title:            { type: String }
+    title:            { type: String },
+    is_logout:        { type: String, default: ''}
   },
   data: () => ({
     clickNotClose       : false, // disable close navMenu on outside click
