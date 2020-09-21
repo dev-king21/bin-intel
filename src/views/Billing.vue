@@ -303,7 +303,6 @@ export default {
       modalTitle: '',
       price: '',
       currentLevel: this.$store.state.AppActiveUser.userLevel ? this.$store.state.AppActiveUser.userLevel : 0,
-      buttonText: [],
       updateLevel: 0
     }
   },
@@ -360,30 +359,6 @@ export default {
         localStorage.setItem('userInfo', JSON.stringify(res_user.data.body))
         this.$store.state.AppActiveUser = res_user.data.body
         this.currentLevel = this.$store.state.AppActiveUser.userLevel ? Number(this.$store.state.AppActiveUser.userLevel) : 0
-        if (this.currentLevel === 0) {
-          this.buttonText[0] = 'Current Plan'
-          this.buttonText[1] = 'Upgrade'
-          this.buttonText[2] = 'Upgrade'
-          this.buttonText[3] = 'Upgrade'
-        }
-        if (this.currentLevel === 1) {
-          this.buttonText[0] = 'Downgrade'
-          this.buttonText[1] = 'Current Plan'
-          this.buttonText[2] = 'Upgrade'
-          this.buttonText[3] = 'Upgrade'
-        }
-        if (this.currentLevel === 2) {
-          this.buttonText[0] = 'Downgrade'
-          this.buttonText[1] = 'Downgrade'
-          this.buttonText[2] = 'Current Plan'
-          this.buttonText[3] = 'Upgrade'
-        }
-        if (this.currentLevel === 3) {
-          this.buttonText[0] = 'Downgrade'
-          this.buttonText[1] = 'Downgrade'
-          this.buttonText[2] = 'Downgrade'
-          this.buttonText[3] = 'Current Plan'
-        }
       }).catch((error) => {
         this.$vs.loading.close()
         this.$vs.notify({

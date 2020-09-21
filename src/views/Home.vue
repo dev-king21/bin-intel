@@ -87,12 +87,13 @@ export default {
           }
         }).catch((error) => {
           this.$vs.loading.close()
-          console.log(error)
           this.loader = false
-          this.msg = 'The incoming token has expired'
-          localStorage.removeItem('IdToken')
-          localStorage.removeItem('AccessToken')
-          localStorage.removeItem('RefreshToken')
+          this.$vs.notify({
+            title:'Error',
+            text: error.response.data.message,
+            color:'danger',
+            position:'top-right'})
+          this.msg = error.response.data.message
         })
     }
   }

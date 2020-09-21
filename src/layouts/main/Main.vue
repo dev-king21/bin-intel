@@ -214,6 +214,7 @@ export default {
         localStorage.removeItem('IdToken')
         localStorage.removeItem('AccessToken')
         localStorage.removeItem('RefreshToken')
+        localStorage.removeItem('userInfo')
         this.$router.push('/pages/login').catch(() => {})
       }
 
