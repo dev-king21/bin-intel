@@ -315,7 +315,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (Idtoken && (!to.meta || to.meta.rule !== 'user')) {
-    return next('/dashboard')
+    // return next('/dashboard')
   }
 
   return next()

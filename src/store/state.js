@@ -26,7 +26,6 @@ const userDefaults = {
 }
 
 const userInfoLocalStorage = JSON.parse(localStorage.getItem('userInfo')) || {}
-
 // Set default values for active-user
 // More data can be added by auth provider or other plugins/packages
 const getUserInfo = () => {

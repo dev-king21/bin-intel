@@ -18,7 +18,7 @@
                 </vx-card>
             </div>
             <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2">
-                <statistics-card-line icon="ShoppingBagIcon" statistic="40 ms" statisticTitle="API PERSON TIME" :chartData="ordersRecevied" color="success" type="area"></statistics-card-line>
+                <statistics-card-line icon="ShoppingBagIcon" :statistic="`${responseTime} ms`" statisticTitle="API PERSON TIME" :chartData="ordersRecevied" color="success" type="area"></statistics-card-line>
             </div>
         </div>
         <div class="vx-row">
@@ -63,25 +63,23 @@
                 <vx-card class="mt-5">
                     <h1>API Keys</h1>
                     <vs-divider class="my-6"></vs-divider>
-                    <div class="vx-row font-medium p-3">
-                        <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2">
-                            1bcea8ee878049b9253bf0206e79b2a4
+                    <div class="vx-row font-medium p-3" v-for="(contact, index) in ApiKeys" :key="index">
+                        <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2 api-key">
+                            <span>{{index+1}}. </span>
+                            <span :id="`api-key-${index}`">{{contact.apikey}}</span>
                         </div>
-                        <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2 text-right">
-                            <feather-icon icon="CopyIcon" class="text-primary"></feather-icon>
-                            <feather-icon icon="RepeatIcon" class="text-success"></feather-icon>
+                        <div class="vx-col flex items-center justify-end w-full md:w-1/2 lg:w-1/2 xl:w-1/2 text-right">
+                            <vs-button color="primary" type="filled" style = "right:10px"  icon-pack="feather" icon="icon-copy"  @click="copyApikey(contact,index)"></vs-button>
+                            <vs-button color="success" type="filled" icon-pack="feather" icon="icon-repeat" @click="refreshApikey(contact,index)"></vs-button>
                         </div>
+                        
+                        <!-- <div class="vs-component vs-divider">
+                            <span class="vs-divider-border after vs-divider-border-success" style="width: 100%; border-top-width: 1px; border-top-style: dashed;"></span>
+                            <span class="vs-divider--text vs-divider-text-success vs-divider-background-default" style="background: transparent;">{{index+1}}</span>
+                            <span class="vs-divider-border before vs-divider-border-success" style="width: 100%; border-top-width: 1px; border-top-style: dashed;"></span>
+                        </div> -->
                     </div>
-                    <div class="vx-row font-medium p-3">
-                        <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2">
-                            1bcea8ee878049b9253bf0206e79b2a4
-                        </div>
-                        <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2 text-right">
-                            <feather-icon icon="CopyIcon" class="text-primary"></feather-icon>
-                            <feather-icon icon="RepeatIcon" class="text-success"></feather-icon>
-                        </div>
-                    </div>
-                    <vs-button icon-pack="feather" icon="icon-chevrons-right" icon-after class="shadow-md w-full">Add Key</vs-button>
+                    <vs-button icon-pack="feather" icon="icon-chevrons-right" icon-after class="shadow-md w-full" @click="addApiKey">Add Key</vs-button>
                 </vx-card>
             </div>
         </div>
@@ -90,13 +88,123 @@
 <script>
 import StatisticsCardLine from './StatisticsCardLine.vue'
 export default {
+   
   data () {
     return {
-      ordersRecevied :  [{data: [3, 10, 5, 8, 6, 9]}]
+      ordersRecevied :  [{data: [3, 10, 5, 8, 6, 9]}],
+      responseTime:'',
+      ApiKeys: [],
+      sel_content : [],
+      sel_index : '',
+      currentTime: null,
     }
   },
   components: {
     StatisticsCardLine
+  },
+  mounted() {
+    this.getResponseVal();
+  },
+  methods: {
+    getResponseVal() {
+       var startTime = (new Date()).getTime(),endTime;
+       const action = '/beta/response-time'
+       
+        this.$http.get(action).then((response) => {
+            endTime = (new Date()).getTime();
+            this.responseTime = endTime-startTime;
+             this.ordersRecevied[0].data.splice(0,1)
+             this.ordersRecevied[0].data.push(this.responseTime)
+             //console.log(this.ordersRecevied[0].data)
+            
+        })
+        //setTimeout(this.getResponseVal, 2000);
+       
+    },
+    addApiKey(){
+        if(this.ApiKeys.length > 8){
+            this.$vs.notify({
+                text: "You have already 10 api keys. You can't make apikey anymore!.",
+                color: 'danger',
+                position:'top-right'
+            })     
+            return
+        }
+
+        this.colorAlert = "success"
+        this.$vs.dialog({
+            color:this.colorAlert,
+            title: `Confirm`,
+            text: 'Are you sure make new apikey?',
+            accept:this.add_key
+        })
+    },
+    add_key () {
+        this.$vs.loading({
+            type: 'sound',
+            text: 'Loading ... '
+        })  
+        const action = '/beta/profile/add-api-key'
+        this.$http.get(action).then((response) => {
+            this.$vs.loading.close()
+            this.ApiKeys.push(response.data.body.api_key)
+        })
+    },
+    refreshApikey(contact,index){
+        this.sel_content = contact
+        this.sel_index = index
+        this.colorAlert = "success"
+        this.$vs.dialog({
+            color:this.colorAlert,
+            title: `Confirm`,
+            text: 'Are you sure refresh apikey?',
+            accept:this.refreshkey
+        })
+    },
+    refreshkey(){
+        this.$vs.loading({
+            type: 'sound',
+            text: 'Loading ... '
+        })  
+        const action = '/beta/profile/refresh-api-key'
+        this.$http.post(action, this.sel_content).then((response) => {
+            this.$vs.loading.close()
+            this.ApiKeys.splice(this.sel_index, 1, response.data.body.api_key)
+        })
+    },
+    
+    copyApikey(contact,index){
+        var copyApi = document.querySelector("#api-key-"+index+"")
+        var textArea = document.createElement('textarea')
+        textArea.value = copyApi.textContent
+        document.body.appendChild(textArea)
+        textArea.select()
+        document.execCommand("copy")
+        textArea.remove()
+        this.$vs.notify({
+            text: 'API key has been copied to the clipboard.',
+            color: 'primary',
+            position:'top-right'
+        })        
+    }
+  },
+  created () {
+    this.$vs.loading({
+      type: 'sound',
+      text: 'Loading ... '
+    })
+    this.$http.get('/beta/profile/get-api-keys')
+      .then((response) => {
+        this.$vs.loading.close()
+        this.ApiKeys = response.data.body.Items
+      }).catch((error) => {
+        this.$vs.loading.close()
+        this.$vs.notify({
+          title:'Error',
+          text: error.response.data.message,
+          color:'danger',
+          position:'top-right'})
+      })
   }
 }
 </script>

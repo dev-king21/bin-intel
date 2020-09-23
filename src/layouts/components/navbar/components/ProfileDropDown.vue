@@ -13,31 +13,16 @@
       </div>
 
       <vs-dropdown-menu class="vx-navbar-dropdown">
-        <ul style="min-width: 9rem">
+        <ul style="min-width: 10rem">
 
           <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white">
-            <feather-icon icon="UserIcon" svgClasses="w-4 h-4" />
-            <span class="ml-2">Profile</span>
+            <router-link class="hover:text-white text-dark" to="/dashboard"><feather-icon icon="HomeIcon" svgClasses="w-4 h-4" />
+            <span class="ml-2">Dashboard</span></router-link>
           </li>
 
           <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white">
-            <feather-icon icon="MailIcon" svgClasses="w-4 h-4" />
-            <span class="ml-2">Inbox</span>
-          </li>
-
-          <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white">
-            <feather-icon icon="CheckSquareIcon" svgClasses="w-4 h-4" />
-            <span class="ml-2">Tasks</span>
-          </li>
-
-          <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white">
-            <feather-icon icon="MessageSquareIcon" svgClasses="w-4 h-4" />
-            <span class="ml-2">Chat</span>
-          </li>
-
-          <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white">
-            <feather-icon icon="HeartIcon" svgClasses="w-4 h-4" />
-            <span class="ml-2">Wish List</span>
+            <router-link class="hover:text-white text-dark" to="/profile"><feather-icon icon="UserIcon" svgClasses="w-4 h-4" />
+            <span class="ml-2">Profile</span></router-link>
           </li>
 
           <vs-divider class="m-1" />
@@ -48,6 +33,7 @@
             <feather-icon icon="LogOutIcon" svgClasses="w-4 h-4" />
             <span class="ml-2">Logout</span>
           </li>
+
         </ul>
       </vs-dropdown-menu>
     </vs-dropdown>

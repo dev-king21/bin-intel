@@ -356,8 +356,8 @@ export default {
     this.$http.get('/beta/profile')
       .then((res_user) => {
         this.$vs.loading.close()
-        localStorage.setItem('userInfo', JSON.stringify(res_user.data.body))
-        this.$store.state.AppActiveUser = res_user.data.body
+        localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
+        this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
         this.currentLevel = this.$store.state.AppActiveUser.userLevel ? Number(this.$store.state.AppActiveUser.userLevel) : 0
       }).catch((error) => {
         this.$vs.loading.close()

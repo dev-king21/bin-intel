@@ -42,6 +42,7 @@
                       class="w-full"/>
 
                   <vs-input
+                      v-on:keyup.enter="login_click(email, password)"
                       type="password"
                       name="password"
                       icon-no-border
@@ -108,6 +109,7 @@ export default{
     }
   },
   methods: {
+   
     login_click (email, password) {
       const action = '/beta/signin'
       this.$vs.loading({
@@ -124,8 +126,8 @@ export default{
             localStorage.setItem('RefreshToken', auth.RefreshToken)
             this.$http.get('/beta/profile')
               .then((res_user) => {
-                localStorage.setItem('userInfo', JSON.stringify(res_user.data.body))
-                this.$store.state.AppActiveUser = res_user.data.body
+                localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
+                this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
               })
             this.$router.push('/')
           } else {
@@ -140,7 +142,8 @@ export default{
     },
     registerUser () {
       this.$router.push('/pages/register').catch(() => {})
-    }
+    },
+    
   }
 }
 </script>

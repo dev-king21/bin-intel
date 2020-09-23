@@ -29,13 +29,48 @@
       <div class="vs-con-items">
         <li class="vs-navbar--item ml-4 is-active-item vs-navbar-item-primary"
           v-for="item in navMenuItems" :key="item.url">
-          <a :href="item.url" class="flex items-center font-bold mr-4" style="font-size: 14px;" :class="{'text-primary': item.url === $route.path}">
+          <a :href="item.url" v-if="!isLogin || item.name!='Pricing'" class="flex items-center font-bold mr-4" style="font-size: 14px;" :class="{'text-primary': item.url === $route.path}">
             {{item.name}} </a>
         </li>
         <li class="vs-navbar--item vs-navbar-item-primary">
           <template v-if="isLogin">
-            <a class="h2 flex items-center cursor-pointer font-bold mr-4" style="font-size: 14px;" @click="logout">
-              <feather-icon class="mr-4" icon="LogOutIcon"/> LogOut </a>
+
+            <div class="the-navbar__user-meta flex items-center" >
+
+              <div class="text-right leading-tight hidden sm:block">
+                <p class="font-semibold">{{ user.first_name}} {{ user.last_name}}</p>
+              </div>
+
+              <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
+
+                <vs-avatar :src="user.profile_img"/>
+
+                <vs-dropdown-menu class="vx-navbar-dropdown">
+                  <ul style="min-width: 10rem">
+
+                    <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white">
+                      <router-link class="hover:text-white text-dark" to="/dashboard"><feather-icon icon="HomeIcon" svgClasses="w-4 h-4" />
+                      <span class="ml-2">Dashboard</span></router-link>
+                    </li>
+
+                    <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white">
+                      <router-link class="hover:text-white text-dark" to="/profile"><feather-icon icon="UserIcon" svgClasses="w-4 h-4" />
+                      <span class="ml-2">Profile</span></router-link>
+                    </li>
+
+                    <vs-divider class="m-1" />
+
+                    <li
+                      class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                      @click="logout">
+                      <feather-icon icon="LogOutIcon" svgClasses="w-4 h-4" />
+                      <span class="ml-2">Logout</span>
+                    </li>
+                  </ul>
+                </vs-dropdown-menu>
+              </vs-dropdown>
+            </div>
+
           </template>
           <template v-else>
             <a class="h2 flex items-center cursor-pointer font-bold mr-4" style="font-size: 14px;" @click="$router.push('/pages/login').catch(() => {})">
@@ -142,7 +177,7 @@ export default {
       navMenuItems,
       routerTransition  : themeConfig.routerTransition || 'none',
       routeTitle        : this.$route.meta.pageTitle,
-      isLogin : localStorage.getItem('IdToken')
+      isLogin           : localStorage.getItem('IdToken')
     }
   },
   watch: {
@@ -158,6 +193,9 @@ export default {
     }
   },
   computed: {
+    user () {
+      return this.$store.state.AppActiveUser
+    },
     bodyOverlay () { return this.$store.state.bodyOverlay },
     contentAreaClass () {
       if (this.mainLayoutType === 'vertical') {
@@ -190,6 +228,7 @@ export default {
     verticalNavMenuWidth () { return this.$store.state.verticalNavMenuWidth },
     windowWidth ()          { return this.$store.state.windowWidth }
   },
+  
   methods: {
     changeRouteTitle (title) {
       this.routeTitle = title

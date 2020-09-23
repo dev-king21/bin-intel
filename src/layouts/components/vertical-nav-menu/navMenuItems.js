@@ -9,12 +9,14 @@
 
 
 export default [
+
   {
     url: '/product',
     name: 'Product',
     slug: 'product',
     icon: 'HomeIcon'
   },
+  
   {
     url: '/pricing',
     name: 'Pricing',

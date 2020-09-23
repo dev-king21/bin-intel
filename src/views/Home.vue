@@ -11,7 +11,7 @@
           <vx-card class="mt-5 bg-black text-white">
               <label style="text-transform: uppercase"> Enter first 6 or 8 digits of any credit card to get intel</label>
               <div class="demo-alignment">
-                  <vs-input icon-pack="feather" icon="icon-search" placeholder="Search" v-model="value1" class="is-label-placeholder text-black" />
+                  <vs-input icon-pack="feather" icon="icon-search" placeholder="Search" v-model="value1" class="is-label-placeholder text-black" v-on:keyup.enter="submit_click" />
                   <vs-button color="primary" type="filled" @click="submit_click">Search</vs-button>
               </div>
               <h3 class="text-primary my-4" :class="loader ? 'text-primary' : 'text-warning'">{{msg}}</h3>
@@ -66,26 +66,28 @@ export default {
       })
       this.$http.get(`/beta/home/${this.value1}`)
         .then((response) => {
+          console.log('rrrrr', response.data)
           this.$vs.loading.close()
-          if (response && response.data && response.data.status === 'success') {
+          if (response && response.data && response.data.card) {
             this.$vs.notify({
               title:'Success',
               text:'You received the information successfully.',
               color:'success',
               position:'top-right'})
-            this.card_info = response.data.ret
+            this.card_info = response.data.card
             this.loader = true
             this.msg = 'Card Information'
           } else {
             this.$vs.notify({
               title:'Error',
-              text: response.data.msg,
+              text: response.data.message,
               color:'danger',
               position:'top-right'})
             this.loader = false
-            this.msg = response.data.msg
+            this.msg = response.data.message
           }
         }).catch((error) => {
+          console.log('sssss', error.response.data)
           this.$vs.loading.close()
           this.loader = false
           this.$vs.notify({
