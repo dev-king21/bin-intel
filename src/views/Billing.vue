@@ -119,7 +119,7 @@
             <template slot="no-body">
                 <div>
                     <div class="price-header bg-primary">
-                        <p class="text-white ">Monthly</p>
+                        <p class="text-white ">Annually</p>
                         <h1 class="letter-spacing-base text-uppercase mb-0 text-white">$1250.00</h1>
                     </div>
                     <p class="mt-2 mb-8 text-xl font-medium text-success text-center">
@@ -151,7 +151,7 @@
     <vs-popup classContent="Payment" :title="modalTitle" :active.sync="modalPayment">
       <h2>Your total is <label class="text-success">$ {{price}}</label></h2>
       <div class="flex flex-col py-4 px-8">
-        <div id="card"></div>
+        <div id="card" ref="card"></div>
       </div>
       <div class="mt-8 flex flex-wrap items-center justify-end">
         <vs-button @click="purchase(updateLevel)">Purchase</vs-button>
@@ -167,7 +167,7 @@ let card = undefined
 let http = undefined
 let notify = undefined
 let router = undefined
-
+console.log(card)
 const orderComplete = function (clientSecret) {
   stripe.retrievePaymentIntent(clientSecret).then(function (result) {
     const paymentIntent = result.paymentIntent
@@ -367,6 +367,9 @@ export default {
           color:'danger',
           position:'top-right'})
       })
+  },
+  beforeDestroy() {
+    card.destroy(this.$refs.card);
   }
 }
 </script>

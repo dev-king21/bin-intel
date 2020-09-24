@@ -254,7 +254,7 @@ export default {
         localStorage.removeItem('AccessToken')
         localStorage.removeItem('RefreshToken')
         localStorage.removeItem('userInfo')
-        this.$router.push('/pages/login').catch(() => {})
+        this.$router.push('/pages/login')
       }
 
       // This is just for demo Purpose. If user clicks on logout -> redirect

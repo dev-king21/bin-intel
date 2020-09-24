@@ -31,8 +31,8 @@
                             Consumed API Requests
                         </div>
                         <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2 text-right">
-                            <p>82% (820 / 1 000)</p>
-                            <vs-progress class="block mt-1" :percent="82" color="primary"></vs-progress>
+                            <p>{{read_percent}} % ( {{read_cnt}} / {{total_cnt}})</p>
+                            <vs-progress class="block mt-1" :percent="read_percent" color="primary"></vs-progress>
                         </div>
                     </div>
                     <div class="vx-row font-medium p-3">
@@ -40,7 +40,7 @@
                             API Requests Today
                         </div>
                         <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2 text-right">
-                            2 236
+                            {{today_cnt}}
                         </div>
                     </div>
                     <div class="vx-row font-medium p-3">
@@ -48,7 +48,7 @@
                             Surcharge API Requests
                         </div>
                         <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2 text-right">
-                            0
+                            {{extra_cnt}}
                         </div>
                     </div>
                     <div class="vx-row font-medium p-3">
@@ -56,7 +56,7 @@
                             Surcharge Amount (incl. in next bill)
                         </div>
                         <div class="vx-col w-full md:w-1/2 lg:w-1/2 xl:w-1/2 text-right">
-                            $ 0.00
+                            $ {{extra_billing}}
                         </div>
                     </div>
                 </vx-card>
@@ -72,7 +72,7 @@
                             <vs-button color="primary" type="filled" style = "right:10px"  icon-pack="feather" icon="icon-copy"  @click="copyApikey(contact,index)"></vs-button>
                             <vs-button color="success" type="filled" icon-pack="feather" icon="icon-repeat" @click="refreshApikey(contact,index)"></vs-button>
                         </div>
-                        
+
                         <!-- <div class="vs-component vs-divider">
                             <span class="vs-divider-border after vs-divider-border-success" style="width: 100%; border-top-width: 1px; border-top-style: dashed;"></span>
                             <span class="vs-divider--text vs-divider-text-success vs-divider-background-default" style="background: transparent;">{{index+1}}</span>
@@ -88,104 +88,144 @@
 <script>
 import StatisticsCardLine from './StatisticsCardLine.vue'
 export default {
-   
+
   data () {
     return {
-      ordersRecevied :  [{data: [3, 10, 5, 8, 6, 9]}],
-      responseTime:'',
+      ordersRecevied : this.$store.state.chartVal ,
+      responseTime:0,
       ApiKeys: [],
       sel_content : [],
       sel_index : '',
-      currentTime: null,
+      total_cnt:0,
+      read_cnt:0,
+      read_percent:0.0,
+      today_cnt:0,
+      api_level:0,
+      extra_cnt:0,
+      extra_billing:0.0,
+
+
     }
   },
   components: {
     StatisticsCardLine
   },
-  mounted() {
-    this.getResponseVal();
+  mounted () {
+    this.getResponseVal()
   },
   methods: {
-    getResponseVal() {
-       var startTime = (new Date()).getTime(),endTime;
-       const action = '/beta/response-time'
-       
-        this.$http.get(action).then((response) => {
-            endTime = (new Date()).getTime();
-            this.responseTime = endTime-startTime;
-             this.ordersRecevied[0].data.splice(0,1)
-             this.ordersRecevied[0].data.push(this.responseTime)
-             //console.log(this.ordersRecevied[0].data)
-            
-        })
-        //setTimeout(this.getResponseVal, 2000);
-       
-    },
-    addApiKey(){
-        if(this.ApiKeys.length > 8){
-            this.$vs.notify({
-                text: "You have already 10 api keys. You can't make apikey anymore!.",
-                color: 'danger',
-                position:'top-right'
-            })     
-            return
+    getResponseVal () {
+      this.$http.get('/beta/response-time').then((response) => {
+        const chartdatas = [{data:[]}]
+        chartdatas[0].data = response.data.body.Items.reverse()
+        this.$store.commit('SET_CHART_VAL', chartdatas)
+        var total = 0;
+        var count =  response.data.body.Items.length
+        for(var i = 0; i < count; i++) {
+            total += parseInt(response.data.body.Items[i]);
         }
-
-        this.colorAlert = "success"
-        this.$vs.dialog({
-            color:this.colorAlert,
-            title: `Confirm`,
-            text: 'Are you sure make new apikey?',
-            accept:this.add_key
+        this.responseTime = Math.floor(total/count)
+        localStorage.setItem('chartData', JSON.stringify(chartdatas))
+      })
+      //get userInfo
+      this.$http.get('/beta/profile')
+      .then((res_user) => {
+        this.$vs.loading.close()
+        localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
+        this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
+      })
+      var userInfo = this.$store.state.AppActiveUser
+      this.api_level = userInfo.userLevel
+      this.read_cnt = userInfo.month_cnt
+      if(this.api_level === '0')
+        this.total_cnt = 10;
+      else if(this.api_level === '1')
+        this.total_cnt = 20000;
+      else if(this.api_level ==='2'||this.api_level ==='3')
+        this.total_cnt = 100000;
+      this.read_percent = Math.round(1000*this.read_cnt/this.total_cnt)/1000
+      let date_ob = new Date();
+      let date = ("0" + date_ob.getDate()).slice(-2);
+      let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+      let year = date_ob.getFullYear();
+      var today = year + "-" + month + "-" + date;
+      if(userInfo.last_date === today)
+        this.today_cnt = userInfo.last_cnt
+      if(this.read_cnt > this.total_cnt){
+        this.extra_cnt = this.read_cnt - this.total_cnt
+        if(this.api_level == 1)
+          this.extra_billing = this.extra_cnt*0.005;
+        else
+          this.extra_billing = this.extra_cnt*0.005;
+      }
+    },
+    addApiKey () {
+      if (this.ApiKeys.length > 8) {
+        this.$vs.notify({
+          text: 'You have already 10 api keys. You can\'t make apikey anymore!.',
+          color: 'danger',
+          position:'top-right'
         })
+        return
+      }
+
+      this.colorAlert = 'success'
+      this.$vs.dialog({
+        color:this.colorAlert,
+        title: 'Confirm',
+        text: 'Are you sure make new apikey?',
+        accept:this.add_key
+      })
     },
     add_key () {
-        this.$vs.loading({
-            type: 'sound',
-            text: 'Loading ... '
-        })  
-        const action = '/beta/profile/add-api-key'
-        this.$http.get(action).then((response) => {
-            this.$vs.loading.close()
-            this.ApiKeys.push(response.data.body.api_key)
-        })
+      this.$vs.loading({
+        type: 'sound',
+        text: 'Loading ... '
+      })
+      const action = '/beta/profile/add-api-key'
+      this.$http.get(action).then((response) => {
+        this.$vs.loading.close()
+        this.ApiKeys.push(response.data.body.api_key)
+        localStorage.setItem('apiKey',response.data.body.api_key)
+      })
     },
-    refreshApikey(contact,index){
-        this.sel_content = contact
-        this.sel_index = index
-        this.colorAlert = "success"
-        this.$vs.dialog({
-            color:this.colorAlert,
-            title: `Confirm`,
-            text: 'Are you sure refresh apikey?',
-            accept:this.refreshkey
-        })
+    refreshApikey (contact, index) {
+      this.sel_content = contact
+      this.sel_index = index
+      this.colorAlert = 'success'
+      this.$vs.dialog({
+        color:this.colorAlert,
+        title: 'Confirm',
+        text: 'Are you sure refresh apikey?',
+        accept:this.refreshkey
+      })
     },
-    refreshkey(){
-        this.$vs.loading({
-            type: 'sound',
-            text: 'Loading ... '
-        })  
-        const action = '/beta/profile/refresh-api-key'
-        this.$http.post(action, this.sel_content).then((response) => {
-            this.$vs.loading.close()
-            this.ApiKeys.splice(this.sel_index, 1, response.data.body.api_key)
-        })
+    refreshkey () {
+      this.$vs.loading({
+        type: 'sound',
+        text: 'Loading ... '
+      })
+      const action = '/beta/profile/refresh-api-key'
+      this.$http.post(action, this.sel_content).then((response) => {
+        this.$vs.loading.close()
+        this.ApiKeys.splice(this.sel_index, 1, response.data.body.api_key)
+        localStorage.setItem('apiKey',response.data.body.api_key)
+      })
     },
-    
-    copyApikey(contact,index){
-        var copyApi = document.querySelector("#api-key-"+index+"")
-        var textArea = document.createElement('textarea')
-        textArea.value = copyApi.textContent
-        document.body.appendChild(textArea)
-        textArea.select()
-        document.execCommand("copy")
-        textArea.remove()
-        this.$vs.notify({
-            text: 'API key has been copied to the clipboard.',
-            color: 'primary',
-            position:'top-right'
-        })        
+
+    copyApikey (contact, index) {
+      const copyApi = document.querySelector(`#api-key-${index}`)
+      const textArea = document.createElement('textarea')
+      textArea.value = copyApi.textContent
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      textArea.remove()
+      this.$vs.notify({
+        text: 'API key has been copied to the clipboard.',
+        color: 'primary',
+        position:'top-right'
+      })
     }
   },
   created () {
@@ -205,6 +245,6 @@ export default {
           color:'danger',
           position:'top-right'})
       })
-  }
+  },
 }
 </script>

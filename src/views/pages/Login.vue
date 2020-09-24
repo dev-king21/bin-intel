@@ -119,17 +119,24 @@ export default{
       this.$http.post(action, {email, password})
         .then((response) => {
           if (response.data.statusCode === 200) {
-            this.$vs.loading.close()
             const auth = response.data.body.data.AuthenticationResult
             localStorage.setItem('AccessToken', auth.AccessToken)
             localStorage.setItem('IdToken', auth.IdToken)
             localStorage.setItem('RefreshToken', auth.RefreshToken)
+            this.$http.get('/beta/response-time').then((response) => {
+              const chartdatas = [{data:[]}]
+              chartdatas[0].data = response.data.body.Items.reverse()
+              this.$store.commit('SET_CHART_VAL', chartdatas)
+              localStorage.setItem('chartData', JSON.stringify(chartdatas))
+            })
             this.$http.get('/beta/profile')
-              .then((res_user) => {
-                localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
-                this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
-              })
-            this.$router.push('/')
+            .then((res_user) => {
+              localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
+              this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
+              this.$router.push('/')
+              this.$vs.loading.close()
+            })
+            
           } else {
             this.$vs.loading.close()
             this.$vs.notify({

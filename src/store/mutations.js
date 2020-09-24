@@ -95,6 +95,9 @@ const mutations = {
   // /////////////////////////////////////////////
 
   // Updates user info in state and localstorage
+  SET_CHART_VAL(state, payload){
+    state.chartVal[0] = payload[0]
+  },
   UPDATE_USER_INFO(state, payload) {
 
     // Get Data localStorage
