@@ -109,7 +109,7 @@ export default{
     }
   },
   methods: {
-   
+
     login_click (email, password) {
       const action = '/beta/signin'
       this.$vs.loading({
@@ -126,17 +126,24 @@ export default{
             this.$http.get('/beta/response-time').then((response) => {
               const chartdatas = [{data:[]}]
               chartdatas[0].data = response.data.body.Items.reverse()
+              chartdatas[0].name = 'response time'
               this.$store.commit('SET_CHART_VAL', chartdatas)
               localStorage.setItem('chartData', JSON.stringify(chartdatas))
             })
             this.$http.get('/beta/profile')
-            .then((res_user) => {
-              localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
-              this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
-              this.$router.push('/')
-              this.$vs.loading.close()
-            })
-            
+              .then((res_user) => {
+                localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
+                this.$store.commit('UPDATE_USER_INFO', res_user.data.body.user)
+                this.$router.push('/')
+                this.$vs.loading.close()
+              })
+            this.$http.get('/beta/profile/get-api-keys')
+              .then((response) => {
+                if (response.data.body.Items.length > 0) {
+                  localStorage.setItem('apiKey', response.data.body.Items[0].apikey)
+                }
+              })
+
           } else {
             this.$vs.loading.close()
             this.$vs.notify({
@@ -149,8 +156,8 @@ export default{
     },
     registerUser () {
       this.$router.push('/pages/register').catch(() => {})
-    },
-    
+    }
+
   }
 }
 </script>

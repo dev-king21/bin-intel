@@ -357,7 +357,7 @@ export default {
       .then((res_user) => {
         this.$vs.loading.close()
         localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
-        this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
+        this.$store.commit('UPDATE_USER_INFO', res_user.data.body.user)
         this.currentLevel = this.$store.state.AppActiveUser.userLevel ? Number(this.$store.state.AppActiveUser.userLevel) : 0
       }).catch((error) => {
         this.$vs.loading.close()
@@ -368,8 +368,8 @@ export default {
           position:'top-right'})
       })
   },
-  beforeDestroy() {
-    card.destroy(this.$refs.card);
+  beforeDestroy () {
+    card.destroy(this.$refs.card)
   }
 }
 </script>

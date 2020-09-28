@@ -91,7 +91,7 @@ export default {
 
   data () {
     return {
-      ordersRecevied : this.$store.state.chartVal ,
+      ordersRecevied : this.$store.state.chartVal,
       responseTime:0,
       ApiKeys: [],
       sel_content : [],
@@ -102,9 +102,7 @@ export default {
       today_cnt:0,
       api_level:0,
       extra_cnt:0,
-      extra_billing:0.0,
-
-
+      extra_billing:0.0
     }
   },
   components: {
@@ -118,46 +116,42 @@ export default {
       this.$http.get('/beta/response-time').then((response) => {
         const chartdatas = [{data:[]}]
         chartdatas[0].data = response.data.body.Items.reverse()
+        chartdatas[0].name = 'response time'
         this.$store.commit('SET_CHART_VAL', chartdatas)
-        var total = 0;
-        var count =  response.data.body.Items.length
-        for(var i = 0; i < count; i++) {
-            total += parseInt(response.data.body.Items[i]);
+        let total = 0
+        const count =  response.data.body.Items.length
+        for (let i = 0; i < count; i++) {
+          total += parseInt(response.data.body.Items[i])
         }
-        this.responseTime = Math.floor(total/count)
+        this.responseTime = Math.floor(total / count)
         localStorage.setItem('chartData', JSON.stringify(chartdatas))
       })
       //get userInfo
       this.$http.get('/beta/profile')
-      .then((res_user) => {
-        this.$vs.loading.close()
-        localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
-        this.$store.commit('UPDATE_USER_INFO',res_user.data.body.user)
-      })
-      var userInfo = this.$store.state.AppActiveUser
-      this.api_level = userInfo.userLevel
-      this.read_cnt = userInfo.month_cnt
-      if(this.api_level === '0')
-        this.total_cnt = 10;
-      else if(this.api_level === '1')
-        this.total_cnt = 20000;
-      else if(this.api_level ==='2'||this.api_level ==='3')
-        this.total_cnt = 100000;
-      this.read_percent = Math.round(1000*this.read_cnt/this.total_cnt)/1000
-      let date_ob = new Date();
-      let date = ("0" + date_ob.getDate()).slice(-2);
-      let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-      let year = date_ob.getFullYear();
-      var today = year + "-" + month + "-" + date;
-      if(userInfo.last_date === today)
-        this.today_cnt = userInfo.last_cnt
-      if(this.read_cnt > this.total_cnt){
-        this.extra_cnt = this.read_cnt - this.total_cnt
-        if(this.api_level == 1)
-          this.extra_billing = this.extra_cnt*0.005;
-        else
-          this.extra_billing = this.extra_cnt*0.005;
-      }
+        .then((res_user) => {
+          this.$vs.loading.close()
+          localStorage.setItem('userInfo', JSON.stringify(res_user.data.body.user))
+          this.$store.commit('UPDATE_USER_INFO', res_user.data.body.user)
+          const userInfo = this.$store.state.AppActiveUser
+          this.api_level = userInfo.userLevel
+          this.read_cnt = userInfo.month_cnt ? userInfo.month_cnt : 0
+          if (this.api_level === '1') this.total_cnt = 20000
+          else if (this.api_level === '2' || this.api_level === '3') this.total_cnt = 100000
+          else this.total_cnt = 1000
+          this.read_percent = Math.round(1000 * this.read_cnt / this.total_cnt) / 1000
+          const date_ob = new Date()
+          const date = (`0${  date_ob.getDate()}`).slice(-2)
+          const month = (`0${  date_ob.getMonth() + 1}`).slice(-2)
+          const year = date_ob.getFullYear()
+          const today = `${year  }-${  month  }-${  date}`
+          if (userInfo.last_date === today) this.today_cnt = userInfo.last_cnt
+          if (this.read_cnt > this.total_cnt) {
+            this.extra_cnt = this.read_cnt - this.total_cnt
+            if (this.api_level == 1) this.extra_billing = this.extra_cnt * 0.005
+            else this.extra_billing = this.extra_cnt * 0.005
+          }
+        })
+
     },
     addApiKey () {
       if (this.ApiKeys.length > 8) {
@@ -186,7 +180,7 @@ export default {
       this.$http.get(action).then((response) => {
         this.$vs.loading.close()
         this.ApiKeys.push(response.data.body.api_key)
-        localStorage.setItem('apiKey',response.data.body.api_key)
+        localStorage.setItem('apiKey', response.data.body.api_key)
       })
     },
     refreshApikey (contact, index) {
@@ -209,7 +203,7 @@ export default {
       this.$http.post(action, this.sel_content).then((response) => {
         this.$vs.loading.close()
         this.ApiKeys.splice(this.sel_index, 1, response.data.body.api_key)
-        localStorage.setItem('apiKey',response.data.body.api_key)
+        localStorage.setItem('apiKey', response.data.body.api_key)
       })
     },
 
@@ -245,6 +239,6 @@ export default {
           color:'danger',
           position:'top-right'})
       })
-  },
+  }
 }
 </script>

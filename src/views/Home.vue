@@ -68,10 +68,6 @@ export default {
       if (localStorage.getItem('apiKey') != null) apikey = localStorage.getItem('apiKey')
       this.$http.get(`/beta/home/${this.value1}`, {params: {apikey}})
         .then((response) => {
-          this.$http.get('/beta/profile/get-api-keys')
-            .then((response) => {
-              localStorage.setItem('apiKey', response.data.body.Items[0].apikey)
-            })
           this.$vs.loading.close()
           if (response && response.data && response.data.card) {
             this.$vs.notify({
@@ -83,6 +79,7 @@ export default {
             this.loader = true
             this.msg = 'Card Information'
           } else {
+            console.log('res', response.data)
             this.$vs.notify({
               title:'Error',
               text: response.data.message,
@@ -92,6 +89,7 @@ export default {
             this.msg = response.data.message
           }
         }).catch((error) => {
+          console.log('er', error)
           if (error.response && error.response.data) {
             this.msg = error.response.data.message
           } else if (error.message) {

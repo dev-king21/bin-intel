@@ -17,23 +17,23 @@ instance.interceptors.request.use(function (config) {
   return config
 })
 
-instance.interceptors.response.use(response=>response,
-  error=>{
+instance.interceptors.response.use(response => response,
+  error => {
     console.log('interceptor!!!!!!!!', error)
-    if(error.message.lastIndexOf('status_code_401')!==-1){
+    if (error.message.lastIndexOf('status_code_401') !== -1) {
       localStorage.removeItem('userInfo')
       localStorage.removeItem('IdToken')
       localStorage.removeItem('AccessToken')
       localStorage.removeItem('RefreshToken')
       localStorage.removeItem('apiKey')
-      location.href='/'
+      location.href = '/'
     } else if (error.response && error.response.status === 401) {
       localStorage.removeItem('userInfo')
       localStorage.removeItem('IdToken')
       localStorage.removeItem('AccessToken')
       localStorage.removeItem('RefreshToken')
       localStorage.removeItem('apiKey')
-      location.href='/'
+      location.href = '/'
     } else {
       return Promise.reject(error)
     }
