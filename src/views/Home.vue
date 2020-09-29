@@ -65,21 +65,28 @@ export default {
         text: 'Loading ... '
       })
       let apikey = ''
-      if (localStorage.getItem('apiKey') != null) apikey = localStorage.getItem('apiKey')
-      this.$http.get(`/beta/home/${this.value1}`, {params: {apikey}})
+      const params = new URLSearchParams()
+      params.append('card', this.value1)
+
+      if (localStorage.getItem('apiKey') != null) {
+        apikey = localStorage.getItem('apiKey')
+        params.append('apikey', apikey)
+      }
+
+      this.$http.get('/beta/home/', {params})
         .then((response) => {
           this.$vs.loading.close()
-          if (response && response.data && response.data.card) {
+          console.log('res', response.data)
+          if (response && response.data && response.data.result && response.data.result.info) {
             this.$vs.notify({
               title:'Success',
               text:'You received the information successfully.',
               color:'success',
               position:'top-right'})
-            this.card_info = response.data.card
+            this.card_info = response.data.result.info
             this.loader = true
             this.msg = 'Card Information'
           } else {
-            console.log('res', response.data)
             this.$vs.notify({
               title:'Error',
               text: response.data.message,
@@ -89,7 +96,6 @@ export default {
             this.msg = response.data.message
           }
         }).catch((error) => {
-          console.log('er', error)
           if (error.response && error.response.data) {
             this.msg = error.response.data.message
           } else if (error.message) {
