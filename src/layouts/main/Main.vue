@@ -3,8 +3,7 @@
     Description: Main layout
     ----------------------------------------------------------------------------------------
     Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-    Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
+    Author: Pagos LLC
 ========================================================================================== -->
 
 
@@ -228,7 +227,7 @@ export default {
     verticalNavMenuWidth () { return this.$store.state.verticalNavMenuWidth },
     windowWidth ()          { return this.$store.state.windowWidth }
   },
-  
+
   methods: {
     changeRouteTitle (title) {
       this.routeTitle = title

@@ -4,8 +4,7 @@
   Component Name: TheNavbar
   ----------------------------------------------------------------------------------------
   Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-  Author: Pixinvent
-  Author URL: http://www.themeforest.net/user/pixinvent
+  Author: Pagos LLC
 ========================================================================================== -->
 
 
