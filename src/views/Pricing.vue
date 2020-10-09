@@ -167,20 +167,20 @@ export default {
     }
   },
   methods: {
-    modalOpen(index) {
-     if(localStorage.getItem('userInfo')==null){
-      this.$vs.dialog({
-        type: 'confirm',
-        color: 'danger',
-        title: `Confirm`,
-        text: 'You have to login first!',
-        accept: this.acceptAlert
-      })
-     }
+    modalOpen (index) {
+      if (localStorage.getItem('userInfo') == null) {
+        this.$vs.dialog({
+          type: 'confirm',
+          color: 'danger',
+          title: 'Confirm',
+          text: 'You have to login first!',
+          accept: this.acceptAlert
+        })
+      }
     },
-    acceptAlert() {
+    acceptAlert () {
       this.$router.push('/pages/login').catch(() => {})
-    },
+    }
   }
 }
 </script>

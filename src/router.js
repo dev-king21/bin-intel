@@ -119,7 +119,7 @@ const router = new Router({
         {
           path: '/doc/bin-intel-api',
           name: 'doc-bin-intel-api',
-          component: () => import('./views/doc/Home.vue'),
+          component: () => import('./views/doc/BinIntelAPI.vue'),
           meta: {
             rule: 'req'
           }
