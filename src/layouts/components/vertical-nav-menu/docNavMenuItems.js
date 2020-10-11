@@ -19,13 +19,18 @@ export default [
     slug: 'doc-bin-intel-api'
   },
   {
+    url: '/doc/node-sdk',
+    name: 'Node SDK',
+    slug: 'doc-node-sdk'
+  },
+  {
     url: '/doc/java-sdk',
     name: 'Java SDK',
     slug: 'doc-java-sdk'
   },
   {
     url: '/doc/csharp-sdk',
-    name: 'C-Sharp .Net SDK',
+    name: 'C-Sharp SDK',
     slug: 'doc-csharp-sdk'
   },
   {
@@ -34,14 +39,9 @@ export default [
     slug: 'doc-php-sdk'
   },
   {
-    url: '/doc/javascript-sdk',
-    name: 'Javascript SDK',
-    slug: 'doc-javascript-sdk'
-  },
-  {
-    url: '/doc/jquery-sdk',
-    name: 'JQuery SDK',
-    slug: 'doc-jquery-sdk'
+    url: '/doc/python-sdk',
+    name: 'Python SDK',
+    slug: 'doc-python-sdk'
   },
   {
     url: null,

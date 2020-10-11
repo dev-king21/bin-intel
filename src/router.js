@@ -125,9 +125,17 @@ const router = new Router({
           }
         },
         {
+          path: '/doc/node-sdk',
+          name: 'doc-node-sdk',
+          component: () => import('./views/doc/NodeSDK.vue'),
+          meta: {
+            rule: 'req'
+          }
+        },
+        {
           path: '/doc/java-sdk',
           name: 'doc-java-sdk',
-          component: () => import('./views/doc/Home.vue'),
+          component: () => import('./views/doc/JavaSDK.vue'),
           meta: {
             rule: 'req'
           }
@@ -135,7 +143,7 @@ const router = new Router({
         {
           path: '/doc/csharp-sdk',
           name: 'doc-csharp-sdk',
-          component: () => import('./views/doc/Home.vue'),
+          component: () => import('./views/doc/CSharpSDK.vue'),
           meta: {
             rule: 'req'
           }
@@ -143,23 +151,15 @@ const router = new Router({
         {
           path: '/doc/php-sdk',
           name: 'doc-php-sdk',
-          component: () => import('./views/doc/Home.vue'),
+          component: () => import('./views/doc/PHPSDK.vue'),
           meta: {
             rule: 'req'
           }
         },
         {
-          path: '/doc/javascript-sdk',
-          name: 'doc-javascript-sdk',
-          component: () => import('./views/doc/Home.vue'),
-          meta: {
-            rule: 'req'
-          }
-        },
-        {
-          path: '/doc/jquery-sdk',
-          name: 'doc-jquery-sdk',
-          component: () => import('./views/doc/Home.vue'),
+          path: '/doc/python-sdk',
+          name: 'doc-python-sdk',
+          component: () => import('./views/doc/PythonSDK.vue'),
           meta: {
             rule: 'req'
           }

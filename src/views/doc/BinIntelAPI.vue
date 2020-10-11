@@ -42,12 +42,6 @@
 import Prism from 'vue-prism-component'
 
 export default {
-  data () {
-    return {
-      signup: '/pages/register',
-      request_url: 'https://dmc9l6wlyb.execute-api.us-east-1.amazonaws.com/beta/home/?card=45717360'
-    }
-  },
   components: {
     Prism
   }
